@@ -1,4 +1,3 @@
-markdown
 # 🐍 Python Trainer: Guess the Code Output
 
 Интерактивный тренажёр для студентов, изучающих Python. 
