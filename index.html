@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Python: Списки vs Словари</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #f2f4f8;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .app {
+      max-width: 760px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      padding: 30px 28px 32px;
+      transition: all 0.1s ease;
+    }
+    h1 {
+      font-weight: 600;
+      font-size: 26px;
+      letter-spacing: -0.3px;
+      color: #1e293b;
+      margin: 0 0 2px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .subhead {
+      font-weight: 400;
+      font-size: 18px;
+      color: #475569;
+      margin: 4px 0 18px 0;
+      border-bottom: 1px solid #e9edf2;
+      padding-bottom: 14px;
+    }
+    .progress-area {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 16px;
+      color: #1e293b;
+      margin-bottom: 22px;
+      background: #f8fafc;
+      padding: 8px 14px;
+      border-radius: 60px;
+    }
+    .progress-text {
+      font-weight: 500;
+    }
+    .score-text {
+      font-weight: 500;
+      background: #e2e8f0;
+      padding: 2px 14px;
+      border-radius: 40px;
+      font-size: 15px;
+    }
+    .code-block {
+      background: #0b0e14;
+      border-radius: 18px;
+      padding: 20px 22px;
+      margin-bottom: 28px;
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-shadow: inset 0 0 0 1px #2d3748;
+    }
+    .code-block .kw { color: #fbbf24; }    /* жёлтые ключевые слова */
+    .code-block .fn { color: #60a5fa; }    /* функции */
+    .code-block .str { color: #86efac; }   /* строки зелёные */
+    .code-block .num { color: #f472b6; }   /* числа */
+    .code-block .cmt { color: #6b7a8f; }   /* комментарии */
+    .code-block .op { color: #fbbf24; }    /* операторы */
+    .code-block .var { color: #e2e8f0; }   /* переменные */
+    .code-block .dict { color: #a5b4fc; }  /* словари / ключи */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0 18px;
+    }
+    .option-btn {
+      background: #f1f4f9;
+      border: 2px solid transparent;
+      border-radius: 60px;
+      padding: 16px 8px;
+      font-size: 17px;
+      font-weight: 500;
+      color: #0b1e33;
+      cursor: pointer;
+      transition: all 0.08s linear;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      box-shadow: 0 2px 0 #d0d8e3;
+      text-align: center;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+    .option-btn:active { transform: scale(0.97); }
+    .option-btn.correct {
+      background: #d1fae5;
+      border-color: #0b7e4b;
+      color: #064e2b;
+      box-shadow: 0 0 0 2px #0b7e4b;
+    }
+    .option-btn.wrong {
+      background: #fee2e2;
+      border-color: #b91c1c;
+      color: #7f1d1d;
+      box-shadow: 0 0 0 2px #b91c1c;
+    }
+    .option-btn:disabled {
+      opacity: 0.9;
+      cursor: default;
+      transform: none;
+    }
+    .explanation {
+      margin: 20px 0 16px;
+      padding: 18px 20px;
+      background: #f1f5f9;
+      border-radius: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #1e293b;
+      border-left: 5px solid #3b82f6;
+      display: none;
+    }
+    .explanation.show {
+      display: block;
+    }
+    .result-screen {
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+    .result-screen h2 {
+      font-size: 28px;
+      font-weight: 500;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+    .result-screen .big-score {
+      font-size: 48px;
+      font-weight: 600;
+      color: #1e293b;
+      background: #e9edf2;
+      display: inline-block;
+      padding: 8px 36px;
+      border-radius: 100px;
+      margin: 12px 0 24px;
+    }
+    .restart-btn {
+      background: #1e293b;
+      border: none;
+      border-radius: 60px;
+      padding: 16px 42px;
+      font-size: 20px;
+      font-weight: 500;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #0f172a;
+      transition: 0.06s linear;
+      margin-top: 8px;
+    }
+    .restart-btn:active { transform: translateY(4px); box-shadow: none; }
+    .hidden { display: none; }
+
+    @media (max-width: 550px) {
+      .app { padding: 20px 16px; }
+      .options-grid { grid-template-columns: 1fr; gap: 12px; }
+      .option-btn { padding: 18px 10px; font-size: 18px; }
+      .code-block { font-size: 15px; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <h1>🐍 Python: Списки vs Словари</h1>
+  <div class="subhead">Что выведет этот код?</div>
+  <div class="progress-area">
+    <span class="progress-text" id="progressText">Вопрос 1 из 10</span>
+    <span class="score-text" id="scoreText">✅ 0 из 0</span>
+  </div>
+
+  <div id="quizContainer">
+    <div class="code-block" id="codeDisplay"></div>
+    <div class="options-grid" id="optionsContainer"></div>
+    <div class="explanation" id="explanationBlock"></div>
+  </div>
+
+  <div id="resultContainer" class="result-screen hidden">
+    <h2>🏁 Результат</h2>
+    <div class="big-score" id="finalScore">0 / 10</div>
+    <button class="restart-btn" id="restartBtn">Пройти заново</button>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ---------- 10 вопросов (уникальные, полные) ----------
+    const QUESTIONS = [
+      // 1. Мутация списков (append, insert, pop, изменение по индексу)
+      {
+        code: `a = [1, 2, 3]\na.append(4)\na.insert(1, 9)\nprint(a)`,
+        options: ['[1, 9, 2, 3, 4]', '[1, 2, 3, 4, 9]', '[9, 1, 2, 3, 4]', 'Ошибка'],
+        correct: 0,
+        explanation: 'append(4) добавляет 4 в конец, insert(1, 9) вставляет 9 на позицию 1, сдвигая остальные. Итог: [1, 9, 2, 3, 4].'
+      },
+      {
+        code: `nums = [10, 20, 30, 40]\nx = nums.pop(1)\nnums[2] = 99\nprint(nums)`,
+        options: ['[10, 30, 99]', '[10, 30, 40, 99]', '[10, 30, 99, 40]', '[10, 20, 99, 40]'],
+        correct: 0,
+        explanation: 'pop(1) удаляет элемент с индексом 1 (20) и возвращает его, список становится [10, 30, 40]; nums[2] = 99 меняет 40 на 99 → [10, 30, 99].'
+      },
+      {
+        code: `data = [5, 6, 7]\ndata.append(8)\ndata[0] = 1\ndata.insert(2, 0)\nprint(data)`,
+        options: ['[1, 6, 0, 7, 8]', '[1, 6, 0, 7]', '[1, 0, 6, 7, 8]', '[5, 6, 0, 7, 8]'],
+        correct: 0,
+        explanation: 'append(8) → [5,6,7,8]; data[0]=1 → [1,6,7,8]; insert(2,0) → [1,6,0,7,8].'
+      },
+      // 2. Работа со словарями (get, items, обращение по ключу, pop)
+      {
+        code: `d = {'a': 1, 'b': 2}\nprint(d.get('c', 0))`,
+        options: ['None', '0', 'Ошибка', '1'],
+        correct: 1,
+        explanation: 'dict.get(key, default) возвращает default, если ключа нет. Ключа "c" нет → возвращает 0.'
+      },
+      {
+        code: `d = {'x': 10, 'y': 20}\nval = d.pop('x')\nprint(d)`,
+        options: ["{'x': 10, 'y': 20}", "{'y': 20}", "{'x': 10}", "Ошибка"],
+        correct: 1,
+        explanation: 'pop(\'x\') удаляет ключ "x" и возвращает значение, но печатается сам словарь. Остаётся {\'y\': 20}.'
+      },
+      {
+        code: `d = {'a': 5, 'b': 6}\nprint(d['a'] + d.get('b', 0))`,
+        options: ['11', '10', '5', 'Ошибка'],
+        correct: 0,
+        explanation: 'd[\'a\'] = 5, d.get(\'b\',0) = 6, сумма 11.'
+      },
+      // 3. Вложенные структуры (список словарей, словарь списков)
+      {
+        code: `items = [{'id': 1}, {'id': 2}]\nitems[1]['id'] = 7\nprint(items)`,
+        options: ["[{'id': 1}, {'id': 7}]", "[{'id': 1}, {'id': 2}]", "[{'id': 7}, {'id': 2}]", "Ошибка"],
+        correct: 0,
+        explanation: 'Меняем значение по ключу "id" у второго элемента (индекс 1). Получаем [{\'id\': 1}, {\'id\': 7}].'
+      },
+      {
+        code: `d = {'list': [1, 2], 'num': 3}\nd['list'].append(4)\nprint(d['list'])`,
+        options: ['[1, 2, 4]', '[1, 2]', '[1, 2, 3, 4]', 'Ошибка'],
+        correct: 0,
+        explanation: 'd[\'list\'] — это список [1,2], append(4) мутирует его, получаем [1,2,4].'
+      },
+      // 4. Хитрые случаи (копирование vs ссылка, list(dict.keys()), распаковка)
+      {
+        code: `a = [1, 2]\nb = a\nb.append(3)\nprint(a)`,
+        options: ['[1, 2]', '[1, 2, 3]', '[1, 2, 3, 3]', 'Ошибка'],
+        correct: 1,
+        explanation: 'b = a — это ссылка на тот же список. Мутация через b отражается на a. Вывод: [1, 2, 3].'
+      },
+      {
+        code: `d = {'a': 1, 'b': 2}\nkeys = list(d.keys())\nprint(keys)`,
+        options: ["['a', 'b']", "['a', 'b', 1, 2]", "['a', 1, 'b', 2]", "Ошибка"],
+        correct: 0,
+        explanation: 'list(d.keys()) возвращает список ключей словаря. Порядок сохранён (Python 3.7+): [\'a\', \'b\'].'
+      }
+    ];
+
+    // ---------- состояние ----------
+    let shuffledQuestions = [];
+    let currentIndex = 0;
+    let correctCount = 0;
+    let isAnswered = false;
+    let totalQuestions = QUESTIONS.length;
+
+    // DOM элементы
+    const codeDisplay = document.getElementById('codeDisplay');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const explanationBlock = document.getElementById('explanationBlock');
+    const progressText = document.getElementById('progressText');
+    const scoreText = document.getElementById('scoreText');
+    const quizContainer = document.getElementById('quizContainer');
+    const resultContainer = document.getElementById('resultContainer');
+    const finalScore = document.getElementById('finalScore');
+    const restartBtn = document.getElementById('restartBtn');
+
+    // звук (Web Audio)
+    let audioCtx = null;
+    function playClick() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch (_) { /* тихо */ }
+    }
+
+    // перемешивание (Fisher–Yates)
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // подсветка кода (простая, теги)
+    function highlightPython(code) {
+      let html = code;
+      // ключевые слова (простое)
+      const keywords = ['append', 'insert', 'pop', 'get', 'items', 'keys', 'list', 'dict', 'print', 'len', 'range'];
+      keywords.forEach(kw => {
+        const regex = new RegExp(`\\b${kw}\\b`, 'g');
+        html = html.replace(regex, `<span class="fn">${kw}</span>`);
+      });
+      // строки в кавычках
+      html = html.replace(/'([^']*)'/g, (match, p1) => `<span class="str">'${p1}'</span>`);
+      html = html.replace(/"([^"]*)"/g, (match, p1) => `<span class="str">"${p1}"</span>`);
+      // числа
+      html = html.replace(/\b(\d+)\b/g, (match) => `<span class="num">${match}</span>`);
+      // ключевые слова языка (if, for и т.п. — но мы их не используем)
+      // операторы
+      html = html.replace(/(\[|\]|\{|\}|\(|\)|=|,|\.)/g, (match) => `<span class="op">${match}</span>`);
+      // словари: ключи в кавычках (уже обработано), но подсветим : 
+      html = html.replace(/(['"]\w+['"])(\s*:)/g, (match, key, colon) => `<span class="dict">${key}</span>${colon}`);
+      return html;
+    }
+
+    function renderQuestion(index) {
+      const q = shuffledQuestions[index];
+      if (!q) return;
+      // код с подсветкой
+      codeDisplay.innerHTML = highlightPython(q.code);
+
+      // варианты
+      optionsContainer.innerHTML = '';
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = opt;
+        btn.dataset.index = i;
+        btn.addEventListener('click', () => handleOptionClick(i));
+        optionsContainer.appendChild(btn);
+      });
+
+      // сброс пояснения и стилей
+      explanationBlock.classList.remove('show');
+      explanationBlock.textContent = '';
+      isAnswered = false;
+
+      // обновить прогресс
+      progressText.textContent = `Вопрос ${index + 1} из ${totalQuestions}`;
+      scoreText.textContent = `✅ ${correctCount} из ${totalQuestions}`;
+
+      // все кнопки активны
+      document.querySelectorAll('.option-btn').forEach(b => b.disabled = false);
+    }
+
+    function handleOptionClick(selectedIndex) {
+      if (isAnswered) return;
+      playClick();
+
+      const q = shuffledQuestions[currentIndex];
+      const buttons = document.querySelectorAll('.option-btn');
+      // блокируем
+      buttons.forEach(b => b.disabled = true);
+      isAnswered = true;
+
+      // подсветка
+      buttons.forEach((btn, i) => {
+        btn.classList.remove('correct', 'wrong');
+        if (i === q.correct) {
+          btn.classList.add('correct');
+        } else if (i === selectedIndex && i !== q.correct) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      // счёт
+      if (selectedIndex === q.correct) correctCount++;
+      scoreText.textContent = `✅ ${correctCount} из ${totalQuestions}`;
+
+      // пояснение
+      explanationBlock.textContent = q.explanation;
+      explanationBlock.classList.add('show');
+
+      // переход через 1.6 сек
+      setTimeout(() => {
+        if (currentIndex + 1 < totalQuestions) {
+          currentIndex++;
+          renderQuestion(currentIndex);
+        } else {
+          // конец
+          showResult();
+        }
+      }, 1500);
+    }
+
+    function showResult() {
+      quizContainer.classList.add('hidden');
+      resultContainer.classList.remove('hidden');
+      finalScore.textContent = `${correctCount} / ${totalQuestions}`;
+      // обновим счёт в шапке
+      scoreText.textContent = `✅ ${correctCount} из ${totalQuestions}`;
+      progressText.textContent = `Вопрос ${totalQuestions} из ${totalQuestions}`;
+    }
+
+    function resetGame() {
+      // перемешиваем вопросы
+      shuffledQuestions = shuffleArray([...QUESTIONS]);
+      currentIndex = 0;
+      correctCount = 0;
+      isAnswered = false;
+
+      quizContainer.classList.remove('hidden');
+      resultContainer.classList.add('hidden');
+
+      // сброс звука (если надо)
+      if (audioCtx && audioCtx.state === 'running') {
+        audioCtx.close().catch(()=>{});
+        audioCtx = null;
+      }
+
+      renderQuestion(0);
+    }
+
+    // инициализация
+    function init() {
+      resetGame();
+      restartBtn.addEventListener('click', resetGame);
+    }
+
+    init();
+  })();
+</script>
+</body>
+</html>
