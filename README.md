@@ -19,4 +19,6 @@
 
 ## Ссылка
 https://savdoshin.github.io/Python-Trainer-Guess-the-Code-Output-/quiz1.html
-https://github.com/savdoshin/Python-Trainer-Guess-the-Code-Output-/blob/main/index.html
+
+## Ссылка
+https://savdoshin.github.io/Python-Trainer-Guess-the-Code-Output-/index.html
