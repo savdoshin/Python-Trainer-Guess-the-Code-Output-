@@ -20,5 +20,11 @@
 ## Ссылка
 https://savdoshin.github.io/Python-Trainer-Guess-the-Code-Output-/quiz1.html
 
+# Интерактивный веб-тренажёр для изучения списков и словарей в Python V2 
+
+Студенты смотрят на фрагмент кода и выбирают правильный вывод программы, получая мгновенную обратную связь с пояснениями.
+
+
+
 ## Ссылка
 https://savdoshin.github.io/Python-Trainer-Guess-the-Code-Output-/index.html
