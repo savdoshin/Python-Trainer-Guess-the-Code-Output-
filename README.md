@@ -18,4 +18,4 @@
 - Адаптивная вёрстка
 
 ## Ссылка
-https://savdoshin.github.io/Python-Trainer-Guess-the-Code-Output-/
+https://savdoshin.github.io/Python-Trainer-Guess-the-Code-Output-/quiz1.html
