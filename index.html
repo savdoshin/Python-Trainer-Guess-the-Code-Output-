@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python: Списки vs Словари</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #2c3e50;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e0e0e0;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2c3e50;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 40px 40px 30px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 6px;
+            padding: 20px 24px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #d4d4d4;
+        }
+
+        .code-block .keyword {
+            color: #569cd6;
+        }
+        .code-block .function {
+            color: #dcdcaa;
+        }
+        .code-block .string {
+            color: #ce9178;
+        }
+        .code-block .number {
+            color: #b5cea8;
+        }
+        .code-block .comment {
+            color: #6a9955;
+        }
+        .code-block .operator {
+            color: #d4d4d4;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .answers-grid {
+                grid-template-columns: 1fr;
+            }
+            .content {
+                padding: 24px 20px 20px;
+            }
+        }
+
+        .answer-btn {
+            padding: 14px 18px;
+            border: 2px solid #dcdcdc;
+            border-radius: 6px;
+            background: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+            text-align: left;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: #2c3e50;
+        }
+
+        .answer-btn:hover:not(:disabled) {
+            border-color: #2c3e50;
+            background: #fafafa;
+        }
+
+        .answer-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .answer-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .answer-btn.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .explanation {
+            background: #f8f9fa;
+            border-left: 4px solid #2c3e50;
+            padding: 16px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #495057;
+            display: none;
+        }
+
+        .explanation.visible {
+            display: block;
+        }
+
+        .next-btn {
+            display: none;
+            padding: 12px 28px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .next-btn.visible {
+            display: inline-block;
+        }
+
+        .next-btn:hover {
+            background: #1a252f;
+        }
+
+        .score {
+            text-align: right;
+            font-size: 15px;
+            color: #7f8c8d;
+            margin-top: 8px;
+        }
+
+        .results-screen {
+            display: none;
+            padding: 30px 40px;
+        }
+
+        .results-screen.visible {
+            display: block;
+        }
+
+        .results-screen h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .results-grade {
+            font-size: 16px;
+            margin-bottom: 24px;
+            color: #7f8c8d;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .results-table th {
+            font-weight: 600;
+            color: #7f8c8d;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .results-table tr.clickable {
+            cursor: pointer;
+        }
+        .results-table tr.clickable:hover {
+            background: #f8f9fa;
+        }
+
+        .status-correct {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .status-incorrect {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .review-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .review-modal.visible {
+            display: flex;
+        }
+
+        .review-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .review-close {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .restart-btn {
+            padding: 12px 28px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .restart-btn:hover {
+            background: #1a252f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="content" id="quizContent">
+            <h1>🐍 Python: Списки vs Словари</h1>
+            <p class="subtitle">Что выведет этот код?</p>
+            <div class="code-block" id="codeBlock"></div>
+            <div class="answers-grid" id="answersGrid"></div>
+            <div class="explanation" id="explanation"></div>
+            <button class="next-btn" id="nextBtn">Далее</button>
+            <div class="score" id="scoreDisplay">✅ 0 из 10</div>
+        </div>
+
+        <div class="results-screen" id="resultsScreen">
+            <h2>📊 Результаты</h2>
+            <p class="results-grade" id="resultsGrade"></p>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Тема</th>
+                        <th>Статус</th>
+                        <th>Ваш ответ</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody"></tbody>
+            </table>
+            <button class="restart-btn" id="restartBtn">Пройти заново</button>
+        </div>
+    </div>
+
+    <div class="review-modal" id="reviewModal">
+        <div class="review-content">
+            <button class="review-close" id="reviewClose">&times;</button>
+            <div id="reviewCodeBlock" class="code-block" style="margin-top: 20px;"></div>
+            <div id="reviewExplanation" style="margin-top: 16px; font-size: 14px; line-height: 1.6; color: #495057;"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const questions = [{
+                id: 1,
+                topic: "Мутация списков",
+                code: `lst = [1, 2, 3]
+            x = lst.append(4)
+            print(x)`,
+                answers: ["[1, 2, 3, 4]", "None", "[1, 2, 3]", "4"],
+                correct: 1,
+                explanation: `Метод list.append(item) добавляет элемент в конец списка и возвращает None. Переменная x получает именно это возвращаемое значение, а не изменённый список. Студенты часто ожидают, что x станет равен списку после добавления, путая мутирующий метод с функцией, возвращающей новый объект. Правило: методы списков, изменяющие объект на месте (append, extend, sort, reverse), всегда возвращают None.`
+            }, {
+                id: 2,
+                topic: "Мутация списков",
+                code: `lst = [10, 20, 30]
+            x = lst.pop(1)
+            print(lst)
+            print(x)`,
+                answers: [
+                    "[10, 30] и 20",
+                    "[10, 20, 30] и 20",
+                    "[10, 30] и [10, 30]",
+                    "[20, 30] и 10"
+                ],
+                correct: 0,
+                explanation: `Метод list.pop(index) удаляет элемент по указанному индексу и возвращает его значение. После удаления элемента с индексом 1 (число 20) список lst становится [10, 30], а переменная x получает значение 20. Типичная ошибка — думать, что pop возвращает изменённый список, тогда как на самом деле он возвращает удалённый элемент. Важно помнить: pop() мутирует исходный список и возвращает удалённое значение.`
+            }, {
+                id: 3,
+                topic: "Мутация списков",
+                code: `lst = [5, 10, 15]
+            lst.insert(1, 99)
+            print(lst[2])`,
+                answers: ["99", "10", "15", "5"],
+                correct: 1,
+                explanation: `Метод list.insert(index, value) вставляет элемент на указанную позицию, сдвигая все последующие элементы вправо. После lst.insert(1, 99) список становится [5, 99, 10, 15]. Элемент с индексом 2 — это 10 (индексация: 0→5, 1→99, 2→10, 3→15). Студенты часто ошибаются, полагая что insert заменяет элемент, тогда как он именно вставляет, увеличивая длину списка и сдвигая существующие значения.`
+            }, {
+                id: 4,
+                topic: "Работа со словарями",
+                code: `d = {'a': 1, 'b': 2}
+            x = d.get('c', 0)
+            print(x)`,
+                answers: ["None", "KeyError", "0", "'c'"],
+                correct: 2,
+                explanation: `Метод dict.get(key, default) возвращает значение по ключу, если он существует, иначе — значение default (второй аргумент). Ключа 'c' в словаре нет, поэтому метод возвращает 0. Студенты часто путают d.get('c') с d['c']: прямое обращение через квадратные скобки вызвало бы KeyError, но get() безопасно возвращает None или указанное значение по умолчанию. Правило: всегда используйте get(), если ключ может отсутствовать.`
+            }, {
+                id: 5,
+                topic: "Работа со словарями",
+                code: `d = {'x': 10, 'y': 20}
+            val = d.pop('y')
+            print(d)
+            print(val)`,
+                answers: [
+                    "{'x': 10} и 20",
+                    "{'x': 10, 'y': 20} и 20",
+                    "{'x': 10} и None",
+                    "{'x': 10, 'y': 20} и {'y': 20}"
+                ],
+                correct: 0,
+                explanation: `Метод dict.pop(key) удаляет пару ключ-значение из словаря и возвращает значение, связанное с этим ключом. После d.pop('y') словарь d становится {'x': 10}, а val получает 20. Распространённая ошибка — думать, что pop() возвращает удалённую пару (ключ и значение) или изменённый словарь. Запомните: pop() для словарей, как и для списков, возвращает удаляемое значение, а не контейнер.`
+            }, {
+                id: 6,
+                topic: "Работа со словарями",
+                code: `d = {'name': 'Alice', 'age': 25}
+            print(list(d.keys()))`,
+                answers: [
+                    "['name', 'age']",
+                    "['Alice', 25]",
+                    "[('name', 'Alice'), ('age', 25)]",
+                    "{'name', 'age'}"
+                ],
+                correct: 0,
+                explanation: `Метод dict.keys() возвращает представление ключей словаря — объект dict_keys. Функция list() преобразует это представление в список, содержащий все ключи: ['name', 'age']. Студенты иногда путают keys() с values() (который вернул бы ['Alice', 25]) или с items() (который дал бы кортежи пар). Важно различать три метода: keys() — ключи, values() — значения, items() — пары.`
+            }, {
+                id: 7,
+                topic: "Вложенные структуры",
+                code: `data = [{'id': 1}, {'id': 2}]
+            data[0]['name'] = 'A'
+            print(data[0])`,
+                answers: [
+                    "{'id': 1}",
+                    "{'id': 1, 'name': 'A'}",
+                    "[{'id': 1, 'name': 'A'}, {'id': 2}]",
+                    "Ошибка: словарь нельзя изменить"
+                ],
+                correct: 1,
+                explanation: `Здесь data — список, содержащий словари. Выражение data[0] обращается к первому элементу списка — словарю {'id': 1}. Затем data[0]['name'] = 'A' добавляет новую пару ключ-значение в этот словарь. Сам список data тоже изменится, но print(data[0]) выводит только первый элемент. Типичная ошибка — путать операцию над элементом с операцией над контейнером: мы изменяем словарь внутри списка, а не сам список.`
+            }, {
+                id: 8,
+                topic: "Вложенные структуры",
+                code: `d = {'nums': [1, 2, 3]}
+            d['nums'].append(4)
+            print(len(d['nums']))`,
+                answers: ["3", "4", "Ошибка", "None"],
+                correct: 1,
+                explanation: `d['nums'] возвращает список [1, 2, 3]. Метод append(4) добавляет элемент в этот список, мутируя его на месте. После операции список становится [1, 2, 3, 4], и его длина равна 4. Студенты могут ошибочно думать, что append возвращает None и это повлияет на len(), но len() вызывается уже после мутации и измеряет длину изменённого списка. Правило: метод append() мутирует объект, но последующие операции видят эти изменения.`
+            }, {
+                id: 9,
+                topic: "Хитрые случаи",
+                code: `a = [1, 2, 3]
+            b = a
+            b.append(4)
+            print(a)`,
+                answers: ["[1, 2, 3]", "[1, 2, 3, 4]", "[1, 2, 3] и [1, 2, 3, 4]", "Ошибка"],
+                correct: 1,
+                explanation: `Оператор присваивания b = a не создаёт копию списка, а связывает переменную b с тем же объектом в памяти, на который ссылается a. Когда b.append(4) изменяет список, это изменение видно через обе переменные, так как это один и тот же объект. Это фундаментальная концепция Python: изменяемые объекты передаются по ссылке. Чтобы создать независимую копию, используйте a.copy() или a[:].`
+            }, {
+                id: 10,
+                topic: "Хитрые случаи",
+                code: `d = {'a': 1, 'b': 2}
+            keys = list(d.keys())
+            d['c'] = 3
+            print(keys)`,
+                answers: [
+                    "['a', 'b', 'c']",
+                    "['a', 'b']",
+                    "dict_keys(['a', 'b'])",
+                    "['a', 'b', 'c', 'a', 'b']"
+                ],
+                correct: 1,
+                explanation: `Метод d.keys() возвращает представление ключей, которое динамически отражает изменения словаря. Однако вызов list(d.keys()) создаёт статический список на момент вызова — снимок ключей ['a', 'b']. Последующее добавление ключа 'c' в словарь не влияет на уже созданный список keys. Студенты часто путают динамическое представление dict_keys со статическим списком. Правило: list() создаёт независимую копию, которая не обновляется при изменении исходного словаря.`
+            }];
+
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let shuffledQuestions = [];
+            let userAnswers = [];
+            let answered = false;
+
+            const quizContent = document.getElementById('quizContent');
+            const resultsScreen = document.getElementById('resultsScreen');
+            const progressFill = document.getElementById('progressFill');
+            const codeBlock = document.getElementById('codeBlock');
+            const answersGrid = document.getElementById('answersGrid');
+            const explanation = document.getElementById('explanation');
+            const nextBtn = document.getElementById('nextBtn');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const resultsGrade = document.getElementById('resultsGrade');
+            const resultsBody = document.getElementById('resultsBody');
+            const restartBtn = document.getElementById('restartBtn');
+            const reviewModal = document.getElementById('reviewModal');
+            const reviewClose = document.getElementById('reviewClose');
+            const reviewCodeBlock = document.getElementById('reviewCodeBlock');
+            const reviewExplanation = document.getElementById('reviewExplanation');
+
+            function shuffle(arr) {
+                const a = [...arr];
+                for (let i = a.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [a[i], a[j]] = [a[j], a[i]];
+                }
+                return a;
+            }
+
+            function playSound(correct) {
+                try {
+                    const ctx = new(window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    if (correct) {
+                        osc.frequency.setValueAtTime(880, ctx.currentTime);
+                        osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.08);
+                        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.2);
+                    } else {
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(200, ctx.currentTime);
+                        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.15);
+                    }
+                } catch (e) {}
+            }
+
+            function highlightCode(code) {
+                return code
+                    .replace(/(\bdef\b|\bclass\b|\bimport\b|\bfrom\b|\breturn\b|\bif\b|\belse\b|\belif\b|\bfor\b|\bwhile\b|\bin\b|\bnot\b|\band\b|\bor\b|\bTrue\b|\bFalse\b|\bNone\b|\bprint\b)/g,
+                        '<span class="keyword">$1</span>')
+                    .replace(/(\b[a-zA-Z_]\w*)(?=\()/g, '<span class="function">$1</span>')
+                    .replace(/(['"])(?:(?!\1).)*?\1/g, '<span class="string">$&</span>')
+                    .replace(/(\d+)/g, '<span class="number">$1</span>')
+                    .replace(/(#.*$)/gm, '<span class="comment">$1</span>');
+            }
+
+            function loadQuestion() {
+                answered = false;
+                const q = shuffledQuestions[currentQuestionIndex];
+                progressFill.style.width = ((currentQuestionIndex) / 10 * 100) + '%';
+                codeBlock.innerHTML = highlightCode(q.code);
+                answersGrid.innerHTML = '';
+                explanation.classList.remove('visible');
+                explanation.textContent = '';
+                nextBtn.classList.remove('visible');
+                scoreDisplay.textContent = `✅ ${score} из ${currentQuestionIndex}`;
+
+                q.answers.forEach((ans, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'answer-btn';
+                    btn.textContent = ans;
+                    btn.addEventListener('click', () => selectAnswer(i));
+                    answersGrid.appendChild(btn);
+                });
+            }
+
+            function selectAnswer(index) {
+                if (answered) return;
+                answered = true;
+                const q = shuffledQuestions[currentQuestionIndex];
+                const isCorrect = index === q.correct;
+                playSound(isCorrect);
+
+                if (isCorrect) score++;
+                userAnswers.push({
+                    question: q,
+                    selectedIndex: index,
+                    isCorrect: isCorrect
+                });
+
+                const buttons = answersGrid.querySelectorAll('.answer-btn');
+                buttons.forEach((btn, i) => {
+                    btn.disabled = true;
+                    if (i === q.correct) btn.classList.add('correct');
+                    else if (i === index && !isCorrect) btn.classList.add('incorrect');
+                });
+                if (!isCorrect) buttons[index].classList.add('incorrect');
+
+                explanation.textContent = q.explanation;
+                explanation.classList.add('visible');
+                nextBtn.classList.add('visible');
+                scoreDisplay.textContent = `✅ ${score} из ${currentQuestionIndex + 1}`;
+            }
+
+            function nextQuestion() {
+                currentQuestionIndex++;
+                if (currentQuestionIndex >= 10) {
+                    showResults();
+                } else {
+                    loadQuestion();
+                }
+            }
+
+            function showResults() {
+                quizContent.style.display = 'none';
+                resultsScreen.classList.add('visible');
+                progressFill.style.width = '100%';
+
+                const grade = score >= 9 ? '🏆 Отлично! Вы уверенно владеете темой.' :
+                    score >= 7 ? '👍 Хорошо! Уверенный Python-разработчик.' :
+                    score >= 5 ? '📖 Неплохо, но есть пробелы. Рекомендуем повторить: мутация списков, метод get().' :
+                    '📚 Требуется дополнительная практика. Рекомендуем повторить все темы.';
+                resultsGrade.textContent = `${score}/10 — ${grade}`;
+
+                resultsBody.innerHTML = '';
+                userAnswers.forEach((ua, i) => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'clickable';
+                    tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${ua.question.topic}</td>
+                    <td class="${ua.isCorrect ? 'status-correct' : 'status-incorrect'}">${ua.isCorrect ? '✅' : '❌'}</td>
+                    <td>${ua.question.answers[ua.selectedIndex]}</td>
+                  `;
+                    tr.addEventListener('click', () => showReview(ua.question));
+                    resultsBody.appendChild(tr);
+                });
+            }
+
+            function showReview(question) {
+                reviewCodeBlock.innerHTML = highlightCode(question.code);
+                reviewExplanation.textContent = question.explanation;
+                reviewModal.classList.add('visible');
+            }
+
+            function restart() {
+                shuffledQuestions = shuffle(questions);
+                currentQuestionIndex = 0;
+                score = 0;
+                userAnswers = [];
+                answered = false;
+                quizContent.style.display = 'block';
+                resultsScreen.classList.remove('visible');
+                progressFill.style.width = '0%';
+                loadQuestion();
+            }
+
+            reviewClose.addEventListener('click', () => reviewModal.classList.remove('visible'));
+            reviewModal.addEventListener('click', (e) => {
+                if (e.target === reviewModal) reviewModal.classList.remove('visible');
+            });
+            nextBtn.addEventListener('click', nextQuestion);
+            restartBtn.addEventListener('click', restart);
+
+            shuffledQuestions = shuffle(questions);
+            loadQuestion();
+        })();
+    </script>
+</body>
+</html>
